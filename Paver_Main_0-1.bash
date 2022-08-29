@@ -2,56 +2,46 @@
 	
 Main () {
 
-
 shopt -s extglob
 
-	for Source in $0 $@; do
-	mapfile -O 1 M_ < $Source && M_[0]="${M_[@]//$'\t'/    }"
-	mapfile O_ <<<"${M_[0]}"
-	N=" ${O_[@]} " && N="${N//$'\n'/\ $'\n'\ }"
-	S_=(${N})
-	A_=(${S_[@]//?()/\\})
+	for Source in ${@-$0}; do
+	O_[0]="$(cat $Source)" && mapfile -O 1 O_ <<<"${O_[@]}"
+	mapfile M_ <<<"${O_[0]//$'\t'/    }"
+	N="${M_[@]//$'\n'/\ $'\n'\ }" && S_=(${N}) && A_=(${S_[@]//?()/\\})
 	eval eval declare -A B_[\\\${A_[{0..${#A_[@]}}]%\\}]+=\"\\\ $[A++]\"
-	eval eval C_[\\\${#O_[{${#O_[@]}..0}]}]+=\"\\\ \\\${O_[A--]}\"
+	eval eval C_[\\\${#M_[{${#M_[@]}..0}]}]+=\"\\\ \\\${M_[A--]}\"
 	D_=(${!C_[@]})
-
 
 	Paver () {
 	
-
-	unset {A..Z}
-	
-		while (( ++A <= ${#O_[@]} )); do
-		[[ "${O_[A]//[[:alpha:]|[:space:]]}" = "(){" ]] && {
+		while (( ++A <= ${#M_[@]} )); do
+		[[ "${M_[A]//[[:alpha:]|[:space:]]}" = "(){" ]] && {
 		Stack[++E-F]+=\ $A ; } || {
-		[[ "${O_[A]//[[:space:]]}" = "}" ]] &&\
-	 	Morter[++G]="${O_[@]:$[D=${Stack[E-F++]##*\ }]:$[C=A-D+1]}" &&\
-		[[ $(cksum <<<"${Morter[G]}") != ${O_[A]//[!0-9|\ ]} ]] && {
-		read -p ""
+		[[ "${M_[A]//[[:space:]]}" = "}" ]] &&\
+	 	Morter[++F]="${M_[@]:$[D=${Stack[E-F-1]##*\ }]:$[A-D+1]}" &&\
+		[[ $(cksum <<<"${Morter[F]}") != ${M_[A]//[!0-9|\ ]} ]] && {
+		((I++))
 
 			while (( ++D < A )); do
+			eval declare Padds[{${D_[-1]}..${#M_[D]}}]=" "
+			echo "${M_[D]::-1}${Padds[@]} #$(cksum <<<"${M_[D]}")"
 			unset Padds
-			eval declare Padds[{${D_[-1]}..${#O_[D]}}]=" "
-			echo "${O_[D]::-1}${Padds[@]} #$(cksum <<<"${O_[D]}")"
 			done
 	
 		} || ((H++)) ;}
 		done
 	
-	return $[H+E]
+	((J=$[H-I]-$[E+F]==0)) || return $J
 	
 	}
 	
-
 	Compress () {	
-	
-
-	unset {{A..Z}{_,},{a..z}}
 
 	        for b in ${F_[@]%-}; do
 	
 	                for c in ${B_[$b-]}; do
-	                ! [[ " ${H_[@]} " == *" ${A_[--A-1]} "* ]] && H_+=("${A_[A-1]}")
+	                ! [[ " ${H_[@]} " == *" ${A_[--A-1]} "* ]] &&\
+			H_+=("${A_[A-1]}")
 	                [[ -z $e ]] && eval {d,e}=\$c && continue
 	                N="${N/" $b "/\ $[c-d]\ }"
 	                d=$c
@@ -65,14 +55,11 @@ shopt -s extglob
 	cat <<<"$N" >> $1.isf
 	
 	}
-	
 
 	Decompress () {
 	
-
-	unset {{A..Z}{_,},{a..z}}
-	Slip=(${O_[0]})
-	Skip=(${O_[@]:1:${#O_[@]}})
+	Slip=(${M_[0]})
+	Skip=(${M_[@]:1:${#M_[@]}})
 	
 	        for (( Road=0; ${#Skip[@]} >= Road; Road++ )); do
 	        [[ ${Skip[Road]::1} == 0 ]] || continue && ((++A)) &&\
@@ -87,24 +74,22 @@ shopt -s extglob
 	        unset Path Walk
 	        done
 	
-	Stand="${O_[@]:1}"
+	Stand="${M_[@]:1}"
 	eval Runs="\"${Stand//+([0-9|-])/\$\{Leap\[\$\(\(Z++\)\)\]\}}\""
 	cat <<<"$Runs" >> ${1%%.*}_$(date +'%s').${1#*.}
-	
 
 	}
 	
 	Abstract () {
 	
-
 	        Encode () {
 	
-	        unset {{A..Z}{_,},{a..z}}
+	        unset {A..Z}
 	        [[ $1 = P ]] && { read -sp "?:" a
 	        } || a="$(cat <<<${@:2})"
 	        eval A_+=(\$\'\\\\\\{0..7}{0..7}{0..7}\')
 	        B_=(${A_[@]//[\\|\*|[:cntrl:]]/})
-	        eval declare -A C_[\${B_[A++]/#/\\\\}]={00..95}
+	        eval declare -A C_[\${B_[--A]/#/\\\\}]={00..95}
 	        eval C_[{95..00}]=${B_[$((--A))]/#/\\}
 	        C_+=([$'\t']=96 [$'\n']=99 [' ']=98 [\*]=97 [99]=$'\n' [97]=\* [98]=' ' [96]=$'\t')
 	        [[ $1 =~ (F|P) ]] && X=1
@@ -117,25 +102,19 @@ shopt -s extglob
 	
 	        Inflation () {
 
-
 	        declare -g Crop=(${2//?()/\ })
 	        eval declare -i C+=\({\${#{1,2}}\ ,\$[\${{1,2}//?\(\)/+}]\ }\)
 	
-
 	                Dust () {
-	
 
 	                eval eval C[++Y%10]+=\\\${C[{0..4}]:{${#C[Y++]}..0}:1}
 	                eval eval Till=\( \{\$[++C%2]..\${\#Crop[@]}..{2,2,\${C[{0..4}]:=2}}\} \)
 	                eval eval Crop[\\\${Till[{0..${#Till[@]}}%${#Crop[@]}]}]+=\${Crop[X++%${#Crop[@]}]}
-	                Crop=(${Crop[@]//?()/\ })
-	
+	                Crop=(${Crop[@]//?()/\ })	
 
 	                }
 	
-
 	        Dust
-	
 
 	                while [[ ${#Crop[@]} -le $1 ]]; do
 	                ((C+=${C[C++%3+1]}%10))
@@ -154,16 +133,14 @@ shopt -s extglob
 	                Crop=(${Crop[@]:-${A}})
 	                done
 	
-	        eval echo \${Crop[@]::$1}
-	
+	        eval echo \${Crop[@]::$1}	
 
 	        }
 	
-
-	unset {A..Z}{_,} {a..z} Ext
+	unset {A..Z}
 	[[ ${Ext:=${1##*.}} != ten ]] &&\
-	O_[0]="$(Encode F ${O_[0]})"
-	Build=(${O_[@]//?()/\ })
+	M_[0]="$(Encode F ${M_[0]})"
+	Build=(${M_[@]//?()/\ })
 	Minds=($(Inflation ${#Build[@]} $(Encode P)))
 	
 	        while (( $((V=W++)) < ${#Build[@]} )); do
@@ -184,11 +161,9 @@ shopt -s extglob
 	
 	}
 
-
 Paver $Source
 done
 
 }
-
 
 Main $@
