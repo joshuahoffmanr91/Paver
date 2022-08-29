@@ -168,5 +168,8 @@ Encode 0 ${Sweet%%\ *} > ${1%.*}.bak && echo $'\n'"${Sweet#*\ }" >> ${1%.*}.bak
 
 }
 
-
 Paver $@
+
+}
+
+Main $@
