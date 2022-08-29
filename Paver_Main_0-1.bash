@@ -16,19 +16,21 @@ shopt -s extglob
 	
 		while (( ++A+1 < ${#M_[@]} )); do
 		[[ "${M_[A]//[[:alpha:]|[:space:]]}" = "(){" ]] && {
-		Stack[++E-F]+=\ $A ; } || {
-		[[ "${M_[A]//[[:space:]]}" = "}" ]] &&\
-	 	Morter[++F]="${M_[@]:$[D=${Stack[E-F]##*\ }]:$[A-D+1]}" &&\
-		[[ $(cksum <<<"${Morter[F]}") != ${M_[A]//[!0-9|\ ]} ]] && {
-		((I++))
+		Stack[++E-F]+=\ $A ; } || { [[ "${M_[A]//[[:space:]]}" = "}" ]] && {
+	 	Morter[++F]="${M_[@]:$[D=${Stack[E-F]##*\ }]:$[A-D+1]}"
+		Harden=${M_[A]//[!0-9|[:space:]]}
+		Soften=$(cksum <<<"${Morter[F]}") ;} || continue
+		[[ $Soften != ${Harden#*} ]] && {
 
-			while (( ++D < A )); do
-			eval declare Padds[{${D_[-1]}..${#M_[D]}}]=" "
-			echo "${M_[D]::-1}${Padds[@]} #$(cksum <<<"${M_[D]}")"
+			while (( D++ < A )); do
 			unset Padds
+			eval declare Padds[{${D_[-1]}..${#M_[D]}}]=" "
+			(( $[O=D-A] == 0 )) && { ((H++)) 
+			echo "${M_[A]//[![:blank:]]}"\}"${Padds[@]} #$Soften" 
+			} || echo "${M_[D]::-1}${Padds[@]} #$(cksum <<<"${M_[D]}")"
 			done
-	
-		} || ((H++)) ;}
+
+		} ;} || ((I++))
 		done
 	
 	((J=$[H+I]-$[E+F/2]==0)) || return $J
