@@ -14,11 +14,11 @@ shopt -s extglob
 
 	Paver () {
 	
-		while (( ++A <= ${#M_[@]} )); do
+		while (( ++A+1 < ${#M_[@]} )); do
 		[[ "${M_[A]//[[:alpha:]|[:space:]]}" = "(){" ]] && {
 		Stack[++E-F]+=\ $A ; } || {
 		[[ "${M_[A]//[[:space:]]}" = "}" ]] &&\
-	 	Morter[++F]="${M_[@]:$[D=${Stack[E-F-1]##*\ }]:$[A-D+1]}" &&\
+	 	Morter[++F]="${M_[@]:$[D=${Stack[E-F]##*\ }]:$[A-D+1]}" &&\
 		[[ $(cksum <<<"${Morter[F]}") != ${M_[A]//[!0-9|\ ]} ]] && {
 		((I++))
 
@@ -161,7 +161,7 @@ shopt -s extglob
 	
 	}
 
-Paver $Source
+Paver $Source && echo $?
 done
 
 }
