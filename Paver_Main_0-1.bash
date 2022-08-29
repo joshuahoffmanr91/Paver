@@ -21,11 +21,13 @@ shopt -s extglob
 		Harden=${M_[A]//[!0-9|[:space:]]}
 		Soften=$(cksum <<<"${Morter[F]}") ;} || continue
 		[[ $Soften != ${Harden#*} ]] && {
+		Named=${Source%.*}_${M_[D]//[!a-z|A-Z]}.${Source#*.}
+		echo "${M_[D]::-1} #${Soften}"$'\n'"${Morter[F]#*$'\n'}" > $Named
 
-			while (( D++ < A )); do
+			while (( ++D-1 < A )); do
 			unset Padds
 			eval declare Padds[{${D_[-1]}..${#M_[D]}}]=" "
-			(( $[O=D-A] == 0 )) && { ((H++)) 
+			(( $[D-A] == 0 )) && { ((H++)) 
 			echo "${M_[A]//[![:blank:]]}"\}"${Padds[@]} #$Soften" 
 			} || echo "${M_[D]::-1}${Padds[@]} #$(cksum <<<"${M_[D]}")"
 			done
