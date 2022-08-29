@@ -31,7 +31,7 @@ shopt -s extglob
 		} || ((H++)) ;}
 		done
 	
-	((J=$[H+I]-$[E+F]==0)) || return $J
+	((J=$[H+I]-$[E+F/2]==0)) || return $J
 	
 	}
 	
